@@ -6,11 +6,13 @@ var path = require('path');
 var supertest = require('supertest');
 var initialize = require("../web/initialize.js");
 
-initialize(path.join(__dirname, '/testdata'));
+var fakedir = '/Users/student/2015-08-web-historian/web/archives';
+
+initialize(path.join(fakedir));
 
 archive.initialize({
-  archivedSites: path.join(__dirname, '/testdata/sites'),
-  list: path.join(__dirname, "/testdata/sites.txt")
+  archivedSites: path.join(fakedir, '/sites'),
+  list: path.join(fakedir, "/sites.txt")
 });
 
 var request = supertest.agent(server);
@@ -58,14 +60,17 @@ describe("server", function() {
 
         // Reset the test file and process request
         fs.closeSync(fs.openSync(archive.paths.list, "w"));
+        console.log('hello archive', archive.paths.list);
 
         request
           .post("/")
           .type('form')
           .send({ url: url })
           .expect(302, function (err) {
+            console.log('request', request);
             if (!err) {
               var fileContents = fs.readFileSync(archive.paths.list, 'utf8');
+              console.log(fileContents);
               expect(fileContents).to.equal(url + "\n");
             }
 

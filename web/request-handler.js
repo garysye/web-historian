@@ -14,6 +14,22 @@ var action = {
 				res.end(data)
 			}
 		})
+	},
+	"POST": function(req, res) {
+		var str = '';
+		req.on('data', function(chunk) {
+			str = chunk.slice(4) + '\n';
+		});
+		req.on('end', function() {
+			fs.appendFile(__dirname + '/archives/sites.txt', str, function(err) {
+				if (err) {
+					throw err;
+				}
+			});
+			res.writeHead(302, {'Location': 'http://127.0.0.1:8080'});
+			res.end();
+		})
+
 	}
 
 }
